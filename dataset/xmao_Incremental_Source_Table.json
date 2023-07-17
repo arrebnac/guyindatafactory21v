@@ -1,0 +1,45 @@
+{
+	"name": "xmao_Incremental_Source_Table",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinsql2019",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": {
+					"value": "@dataset().DBName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"DBName": {
+				"type": "string",
+				"defaultValue": "Incremental_Demo"
+			},
+			"SchemaName": {
+				"type": "string",
+				"defaultValue": "dbo"
+			},
+			"TableName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Ford/SCAV+ Training/xmao11"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().SchemaName",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().TableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

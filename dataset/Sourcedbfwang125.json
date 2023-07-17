@@ -1,0 +1,45 @@
+{
+	"name": "Sourcedbfwang125",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinsql2019",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": {
+					"value": "@dataset().SourceDBName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"SourceDBName": {
+				"type": "String",
+				"defaultValue": "dbo"
+			},
+			"SchemaName": {
+				"type": "String",
+				"defaultValue": "dbo"
+			},
+			"TableName": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Ford/SCAV+ Training/fwang125"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().SchemaName",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().TableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

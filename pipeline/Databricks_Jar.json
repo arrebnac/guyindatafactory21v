@@ -1,0 +1,41 @@
+{
+	"name": "Databricks_Jar",
+	"properties": {
+		"activities": [
+			{
+				"name": "ScalaHelloWorld",
+				"type": "DatabricksSparkJar",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"mainClassName": "com.guyin.scala.databricks.azure.HelloWorld",
+					"parameters": [
+						"@formatDateTime(addDays(convertFromUtc(utcNow(), 'China Standard Time'), -1), 'yyyy-MM-dd')"
+					],
+					"libraries": [
+						{
+							"jar": "dbfs:/FileStore/jars/e8b63cb0_443f_4e4b_bf2e_bcec8b9971a2-HelloWorld.jar"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "guyindatabricks",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "Demo/Databricks_Demo"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-06T09:43:53Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

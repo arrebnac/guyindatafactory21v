@@ -1,0 +1,31 @@
+{
+	"name": "Sony_File_Copy_Source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinadls",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"FileName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Sony"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().FileName",
+					"type": "Expression"
+				},
+				"folderPath": "Sony/StorageTrigger",
+				"fileSystem": "datafactory"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,72 @@
+{
+	"name": "pipeline2",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureDatabricksDeltaLakeSink",
+						"importSettings": {
+							"type": "AzureDatabricksDeltaLakeImportCommand"
+						}
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "guyinadls",
+							"type": "LinkedServiceReference"
+						},
+						"path": "datafactory/staging"
+					},
+					"translator": {
+						"value": "@json('{\n\t\"type\": \"TabularTranslator\",\n\t\"mappings\": [\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"MovieID\",\n\t\t\t\t\"type\": \"Guid\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Movie_ID\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"MovieTitle\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Movie_Title\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"Category\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Category\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"Rating\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Rating\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"RunTimeMin\",\n\t\t\t\t\"type\": \"Int16\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"RunTime_Min\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"ReleaseDate\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Release_Date\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t}\n\t]\n}')",
+						"type": "Expression"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "CDMP_SQL2019",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "dbo",
+							"TableName": "Movies",
+							"DBName": "Rentals"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CDMP_DeltaLake",
+						"type": "DatasetReference",
+						"parameters": {
+							"DBName": "default",
+							"TableName": "Movies"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Ford/CDMP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-10-19T10:07:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

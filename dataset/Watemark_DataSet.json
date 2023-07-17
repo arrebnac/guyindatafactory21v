@@ -1,0 +1,45 @@
+{
+	"name": "Watemark_DataSet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinsql",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": {
+					"value": "@dataset().DBName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"DBName": {
+				"type": "String",
+				"defaultValue": "Incremental_Demo"
+			},
+			"SchemaName": {
+				"type": "String",
+				"defaultValue": "dbo"
+			},
+			"TableName": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Demo/Incremental_Demo"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().SchemaName",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().TableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

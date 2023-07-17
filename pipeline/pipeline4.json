@@ -1,0 +1,91 @@
+{
+	"name": "pipeline4",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "AzureDatabricksDeltaLakeSink",
+						"importSettings": {
+							"type": "AzureDatabricksDeltaLakeImportCommand"
+						}
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "guyinadls",
+							"type": "LinkedServiceReference"
+						},
+						"path": "datafactory/staging"
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Colume1",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Colume1",
+									"type": "string"
+								}
+							},
+							{
+								"source": {
+									"name": "Colume2",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Colume2",
+									"type": "string"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "CDMP_Excel",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CDMP_DeltaLake",
+						"type": "DatasetReference",
+						"parameters": {
+							"DBName": "default",
+							"TableName": "excel_test"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Ford/CDMP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-21T07:51:03Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

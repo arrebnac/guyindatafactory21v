@@ -1,0 +1,35 @@
+{
+	"name": "CDMP_Excel",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinadls",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Ford/CDMP"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Sheet1",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "ADF_Test.xlsx",
+				"folderPath": "Ford/CDMP/Excel",
+				"fileSystem": "datafactory"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Colume1",
+				"type": "String"
+			},
+			{
+				"name": "Colume2",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

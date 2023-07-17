@@ -1,0 +1,107 @@
+{
+	"name": "pipeline7",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "XZOU12_SQLSever",
+						"type": "DatasetReference",
+						"parameters": {
+							"SourceDBName": {
+								"value": "@pipeline().parameters.SourceDBName",
+								"type": "Expression"
+							},
+							"SchemaName": {
+								"value": "@pipeline().parameters.SourceSchemaName",
+								"type": "Expression"
+							},
+							"TableName": {
+								"value": "@pipeline().parameters.SourceTableName",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "xzou12_AzureSQL",
+						"type": "DatasetReference",
+						"parameters": {
+							"SourceDBName": {
+								"value": "@pipeline().parameters.SinkDBName",
+								"type": "Expression"
+							},
+							"SchemaName": {
+								"value": "@pipeline().parameters.SinkSchemaName",
+								"type": "Expression"
+							},
+							"TableName": {
+								"value": "@pipeline().parameters.SinkTableName",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"SourceDBName": {
+				"type": "string"
+			},
+			"SourceSchemaName": {
+				"type": "string"
+			},
+			"SourceTableName": {
+				"type": "string"
+			},
+			"SinkDBName": {
+				"type": "string"
+			},
+			"SinkSchemaName": {
+				"type": "string"
+			},
+			"SinkTableName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Ford/SCAV+ Training"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-05-17T06:42:24Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

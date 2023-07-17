@@ -1,0 +1,21 @@
+{
+	"name": "SqlServer1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"DBName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=guyinsql2019;initial catalog=@{linkedService().DBName};user id=guyinsa",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJkNDUzZWFmMi1mYjgyLTRlNTMtYjIwMC1mZmM4MWI0NGUxYTIiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "IR-SQL2019",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

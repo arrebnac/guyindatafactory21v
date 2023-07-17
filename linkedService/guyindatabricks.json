@@ -1,0 +1,21 @@
+{
+	"name": "guyindatabricks",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://adb-6486676399123065.1.databricks.azure.cn/",
+			"newClusterNodeType": "Standard_DS3_v2",
+			"newClusterNumOfWorker": "1",
+			"newClusterSparkEnvVars": {
+				"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+			},
+			"newClusterVersion": "11.3.x-scala2.12",
+			"newClusterInitScripts": [],
+			"clusterOption": "Fixed",
+			"policyId": "896340817E000001",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEZEMUMyRjg2LURFNjUtNDY0MS1BRTRDLTA1QTBFRjY5NTMyOF9iNTQ0NmIzZS0yMTAxLTQxNDktYjYwYS01YzQ1NGQwYTk1N2EiDQp9"
+		}
+	}
+}

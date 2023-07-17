@@ -1,0 +1,22 @@
+{
+	"name": "SourceTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureMySql1",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": "Source"
+			}
+		},
+		"folder": {
+			"name": "Ford/DCSP"
+		},
+		"annotations": [],
+		"type": "AzureMySqlTable",
+		"schema": [],
+		"typeProperties": {
+			"tableName": "`test`"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

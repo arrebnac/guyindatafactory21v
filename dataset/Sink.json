@@ -1,0 +1,22 @@
+{
+	"name": "Sink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureMySql1",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": "Sink"
+			}
+		},
+		"folder": {
+			"name": "Ford/DCSP"
+		},
+		"annotations": [],
+		"type": "AzureMySqlTable",
+		"schema": [],
+		"typeProperties": {
+			"tableName": "`test`"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

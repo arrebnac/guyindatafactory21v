@@ -1,0 +1,27 @@
+{
+	"name": "StorageTrigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pipeline1",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"FileName": "@triggerBody().fileName"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/datafactory/blobs/Sony/StorageTrigger",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/e07f04f0-fa81-48d1-927e-212f1beca349/resourceGroups/guyinstorage/providers/Microsoft.Storage/storageAccounts/guyinadls",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

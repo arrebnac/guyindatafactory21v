@@ -1,0 +1,45 @@
+{
+	"name": "Incremental_Sink_fwang125",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinsql",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": {
+					"value": "@dataset().Incre_sinkDB",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"Incre_sinkDB": {
+				"type": "String",
+				"defaultValue": "Incremental_Demo"
+			},
+			"Incre_sinkSchema": {
+				"type": "String",
+				"defaultValue": "dbo"
+			},
+			"Incre_sinkTable": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Ford/SCAV+ Training/fwang125"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().Incre_sinkSchema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().Incre_sinkTable",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

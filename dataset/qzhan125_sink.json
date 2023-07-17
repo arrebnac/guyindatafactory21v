@@ -1,0 +1,43 @@
+{
+	"name": "qzhan125_sink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinsql",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": {
+					"value": "@dataset().SourceDBName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"SchemaName": {
+				"type": "String"
+			},
+			"TableName": {
+				"type": "String"
+			},
+			"SourceDBName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "Ford/SCAV+ Training/qzhan12"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().SchemaName",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().TableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

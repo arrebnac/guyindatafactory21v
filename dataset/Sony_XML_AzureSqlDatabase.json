@@ -1,0 +1,109 @@
+{
+	"name": "Sony_XML_AzureSqlDatabase",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sony_XML_AzureSqlDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Sony"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DO_No",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DeliveryActionCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DeliveryNotice",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SAPDOType",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ShiptopartyPurchaseOrder_No",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DivisionDescription",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Soldtocode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Soldtoname",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Shiptocode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Shiptoname",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DOCreationDateTime",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MaterialCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MaterialDescription",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Quantity",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Unit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SixDCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SC_No",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PO_No",
+				"type": "nvarchar"
+			},
+			{
+				"name": "IssuePlant",
+				"type": "nvarchar"
+			},
+			{
+				"name": "IssueStorageLocation",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ReceivingStorageLocation",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Sony_XML"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

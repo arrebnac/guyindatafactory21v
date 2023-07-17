@@ -1,0 +1,22 @@
+{
+	"name": "Sony_File_Copy_Sink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinadls",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Sony"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Sony/XML",
+				"fileSystem": "datafactory"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

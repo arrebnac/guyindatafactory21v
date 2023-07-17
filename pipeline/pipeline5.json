@@ -1,0 +1,35 @@
+{
+	"name": "pipeline5",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "pt",
+					"value": {
+						"value": "@formatDateTime(convertTimeZone(utcnow(),'UTC','China Standard Time'), 'yyyyMMdd')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"pt": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Ford/DCSP"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-03-10T01:25:37Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

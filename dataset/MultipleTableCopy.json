@@ -1,0 +1,43 @@
+{
+	"name": "MultipleTableCopy",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinsql2019",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": {
+					"value": "@dataset().DBName",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"DBName": {
+				"type": "String"
+			},
+			"SchemaName": {
+				"type": "String"
+			},
+			"TableName": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Demo/MultipleTableCopy"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().SchemaName",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().TableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

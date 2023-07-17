@@ -1,0 +1,63 @@
+{
+	"name": "guyinsql2019_movies",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinsql2019",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DBName": "movies"
+			}
+		},
+		"parameters": {
+			"SchemaName": {
+				"type": "String",
+				"defaultValue": "dbo"
+			},
+			"TableName": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Demo/Full Demo"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "movie",
+				"type": "nchar"
+			},
+			{
+				"name": "title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "genres",
+				"type": "nvarchar"
+			},
+			{
+				"name": "year",
+				"type": "nchar"
+			},
+			{
+				"name": "Rating",
+				"type": "nchar"
+			},
+			{
+				"name": "Rotton Tomato",
+				"type": "nchar"
+			}
+		],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().SchemaName",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().TableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

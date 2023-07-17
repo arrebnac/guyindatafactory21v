@@ -1,0 +1,15 @@
+{
+	"name": "guyindatafactory",
+	"location": "chinanorth2",
+	"identity": {
+		"type": "SystemAssigned,UserAssigned",
+		"principalId": "2d2aba1f-a791-4f6d-98fb-be5b94cd3d93",
+		"tenantId": "597fa566-8a07-494a-bdcc-2dce6884d6d2",
+		"userAssignedIdentities": {
+			"/subscriptions/e07f04f0-fa81-48d1-927e-212f1beca349/resourcegroups/guyindatabricks/providers/Microsoft.ManagedIdentity/userAssignedIdentities/guyindatabricksmi": {
+				"clientId": "d97f6598-9a69-4858-bcb2-f6ccc77b2739",
+				"principalId": "bf1299bd-d1ab-4546-a09e-416c68fa1d82"
+			}
+		}
+	}
+}

@@ -1,0 +1,6 @@
+{
+	"name": "IR-SQL2019",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

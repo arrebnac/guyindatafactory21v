@@ -1,0 +1,95 @@
+{
+	"name": "pipelinefwang125",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Sourcedbfwang125",
+						"type": "DatasetReference",
+						"parameters": {
+							"SourceDBName": {
+								"value": "@pipeline().parameters.SourceDBName",
+								"type": "Expression"
+							},
+							"SchemaName": "dbo",
+							"TableName": {
+								"value": "@pipeline().parameters.SourceTableName",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Targetdbfwag125",
+						"type": "DatasetReference",
+						"parameters": {
+							"TargetDBName": {
+								"value": "@pipeline().parameters.SinkDBName",
+								"type": "Expression"
+							},
+							"SchemaName": "dbo",
+							"TableName": {
+								"value": "@pipeline().parameters.SinkTableName",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"SinkTableName": {
+				"type": "String"
+			},
+			"SourceTableName": {
+				"type": "String"
+			},
+			"SourceDBName": {
+				"type": "String"
+			},
+			"SinkDBName": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Ford/SCAV+ Training/fwang125"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-05-22T05:34:02Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
