@@ -8,9 +8,6 @@
 		"AzureDatabricksDeltaLake_accessToken": {
 			"value": ""
 		},
-		"Sony_XML_AzureSqlDatabase_connectionString": {
-			"value": ""
-		},
 		"guyinadls_accountKey": {
 			"value": ""
 		},

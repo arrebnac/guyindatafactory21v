@@ -11,10 +11,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'AzureDatabricksDeltaLake'"
 		},
-		"Sony_XML_AzureSqlDatabase_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'Sony_XML_AzureSqlDatabase'"
-		},
 		"guyinadls_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'guyinadls'"
@@ -76,9 +72,6 @@
 					},
 					"AzureDatabricksDeltaLake_accessToken": {
 						"value": "[parameters('AzureDatabricksDeltaLake_accessToken')]"
-					},
-					"Sony_XML_AzureSqlDatabase_connectionString": {
-						"value": "[parameters('Sony_XML_AzureSqlDatabase_connectionString')]"
 					},
 					"guyinadls_accountKey": {
 						"value": "[parameters('guyinadls_accountKey')]"
