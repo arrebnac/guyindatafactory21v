@@ -11,10 +11,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'AzureDatabricksDeltaLake'"
 		},
-		"AzureMySql1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzureMySql1'"
-		},
 		"Sony_XML_AzureSqlDatabase_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Sony_XML_AzureSqlDatabase'"
@@ -80,9 +76,6 @@
 					},
 					"AzureDatabricksDeltaLake_accessToken": {
 						"value": "[parameters('AzureDatabricksDeltaLake_accessToken')]"
-					},
-					"AzureMySql1_connectionString": {
-						"value": "[parameters('AzureMySql1_connectionString')]"
 					},
 					"Sony_XML_AzureSqlDatabase_connectionString": {
 						"value": "[parameters('Sony_XML_AzureSqlDatabase_connectionString')]"
