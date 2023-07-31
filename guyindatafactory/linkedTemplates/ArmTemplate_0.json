@@ -23,10 +23,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'guyinsql'"
 		},
-		"guyinsql2019_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'guyinsql2019'"
-		},
 		"guyinstoragev2_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'guyinstoragev2'"
@@ -156,24 +152,6 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('guyinsql_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/guyinsql2019')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"parameters": {
-					"DBName": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('guyinsql2019_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -493,53 +471,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/CDMP_SQL2019')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "guyinsql2019",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"DBName": {
-							"value": "@dataset().DBName",
-							"type": "Expression"
-						}
-					}
-				},
-				"parameters": {
-					"SchemaName": {
-						"type": "string"
-					},
-					"TableName": {
-						"type": "string"
-					},
-					"DBName": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "Ford/CDMP"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": {
-						"value": "@dataset().SchemaName",
-						"type": "Expression"
-					},
-					"table": {
-						"value": "@dataset().TableName",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Incremental_Demo_Sink_Table')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -586,55 +517,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Incremental_Demo_Source_Table')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "guyinsql2019",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"DBName": {
-							"value": "@dataset().DBName",
-							"type": "Expression"
-						}
-					}
-				},
-				"parameters": {
-					"DBName": {
-						"type": "String",
-						"defaultValue": "Incremental_Demo"
-					},
-					"SchemaName": {
-						"type": "String",
-						"defaultValue": "dbo"
-					},
-					"TableName": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "Demo/Incremental_Demo"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": {
-						"value": "@dataset().SchemaName",
-						"type": "Expression"
-					},
-					"table": {
-						"value": "@dataset().TableName",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
 			]
 		},
 		{
@@ -698,6 +580,93 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_File_Copy_Sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Sony/XML",
+						"fileSystem": "datafactory"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_File_Copy_Source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"FileName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().FileName",
+							"type": "Expression"
+						},
+						"folderPath": "Sony/StorageTrigger",
+						"fileSystem": "datafactory"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_XML_Blob')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinstoragev2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"type": "Xml",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "XML",
+						"container": "sony"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinstoragev2')]"
 			]
 		}
 	]

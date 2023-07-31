@@ -6,184 +6,16 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "guyindatafactory"
+		},
+		"guyinsql2019_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'guyinsql2019'"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/MultipleTableCopy')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "guyinsql2019",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"DBName": {
-							"value": "@dataset().DBName",
-							"type": "Expression"
-						}
-					}
-				},
-				"parameters": {
-					"DBName": {
-						"type": "String"
-					},
-					"SchemaName": {
-						"type": "String"
-					},
-					"TableName": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "Demo/MultipleTableCopy"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": {
-						"value": "@dataset().SchemaName",
-						"type": "Expression"
-					},
-					"table": {
-						"value": "@dataset().TableName",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SQLServerSourceDataSet')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "guyinsql2019",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"DBName": {
-							"value": "@dataset().SourceDBName",
-							"type": "Expression"
-						}
-					}
-				},
-				"parameters": {
-					"SchemaName": {
-						"type": "String",
-						"defaultValue": "dbo"
-					},
-					"TableName": {
-						"type": "String"
-					},
-					"SourceDBName": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "Demo/Simple Copy"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": {
-						"value": "@dataset().SchemaName",
-						"type": "Expression"
-					},
-					"table": {
-						"value": "@dataset().TableName",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Sony_File_Copy_Sink')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "guyinadls",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Sony"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "Sony/XML",
-						"fileSystem": "datafactory"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Sony_File_Copy_Source')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "guyinadls",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"FileName": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "Sony"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@dataset().FileName",
-							"type": "Expression"
-						},
-						"folderPath": "Sony/StorageTrigger",
-						"fileSystem": "datafactory"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Sony_XML_Blob')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "guyinstoragev2",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Sony"
-				},
-				"annotations": [],
-				"type": "Xml",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "XML",
-						"container": "sony"
-					}
-				}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Staging_Binary')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -257,71 +89,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/guyinsql2019_movies')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "guyinsql2019",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"DBName": "movies"
-					}
-				},
-				"parameters": {
-					"SchemaName": {
-						"type": "String",
-						"defaultValue": "dbo"
-					},
-					"TableName": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "Demo/Full Demo"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "movie",
-						"type": "nchar"
-					},
-					{
-						"name": "title",
-						"type": "nvarchar"
-					},
-					{
-						"name": "genres",
-						"type": "nvarchar"
-					},
-					{
-						"name": "year",
-						"type": "nchar"
-					},
-					{
-						"name": "Rating",
-						"type": "nchar"
-					},
-					{
-						"name": "Rotton Tomato",
-						"type": "nchar"
-					}
-				],
-				"typeProperties": {
-					"schema": {
-						"value": "@dataset().SchemaName",
-						"type": "Expression"
-					},
-					"table": {
-						"value": "@dataset().TableName",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/guyinsql_MoviesDB')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -362,592 +129,26 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Incremental_Demo')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/guyinsql2019')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "LookupOldWaterMarkActivity",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": {
-									"value": "@concat('select * from watermarktable where TableName  =  ''', pipeline().parameters.TableName,'''')",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "Watemark_DataSet",
-								"type": "DatasetReference",
-								"parameters": {
-									"DBName": "Incremental_Demo",
-									"SchemaName": "dbo",
-									"TableName": {
-										"value": "@pipeline().parameters.TableName",
-										"type": "Expression"
-									}
-								}
-							}
-						}
-					},
-					{
-						"name": "LookupNewWaterMarkActivity",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"sqlReaderQuery": {
-									"value": "@concat('select MAX(Creationtime) as NewWatermarkvalue from ', pipeline().parameters.TableName)",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "Incremental_Demo_Source_Table",
-								"type": "DatasetReference",
-								"parameters": {
-									"DBName": "Incremental_Demo",
-									"SchemaName": "dbo",
-									"TableName": {
-										"value": "@pipeline().parameters.TableName",
-										"type": "Expression"
-									}
-								}
-							}
-						}
-					},
-					{
-						"name": "IncrementalCopyActivity",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "LookupOldWaterMarkActivity",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "LookupNewWaterMarkActivity",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"sqlReaderQuery": {
-									"value": "@concat('select * from ', pipeline().parameters.TableName, ' where Creationtime > ''', activity('LookupOldWaterMarkActivity').output.firstRow.WatermarkValue, ''' and Creationtime <= ''', activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue,'''')",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Incremental_Demo_Source_Table",
-								"type": "DatasetReference",
-								"parameters": {
-									"DBName": "Incremental_Demo",
-									"SchemaName": "dbo",
-									"TableName": {
-										"value": "@pipeline().parameters.TableName",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Incremental_Demo_Sink_Table",
-								"type": "DatasetReference",
-								"parameters": {
-									"DBName": "Incremental_Demo",
-									"SchemaName": "dbo",
-									"TableName": {
-										"value": "@pipeline().parameters.TableName",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "StoredProceduretoWriteWatermarkActivity",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "IncrementalCopyActivity",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[usp_write_watermark]",
-							"storedProcedureParameters": {
-								"LastModifiedtime": {
-									"value": {
-										"value": "@{activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue}",
-										"type": "Expression"
-									},
-									"type": "DateTime"
-								},
-								"TableName": {
-									"value": {
-										"value": "@pipeline().parameters.TableName",
-										"type": "Expression"
-									},
-									"type": "String"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "guyinsql",
-							"type": "LinkedServiceReference",
-							"parameters": {
-								"DBName": "Incremental_Demo"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"TableName": {
-						"type": "String"
-					}
-				},
-				"variables": {
-					"TableName": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "Demo/SimpleCopy"
-				},
-				"annotations": [],
-				"lastPublishTime": "2023-05-22T08:44:12Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Watemark_DataSet')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MultipleTableCopy')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "LookupTableName",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"sqlReaderQuery": "select name from sys.tables t where schema_name(t.schema_id) = 'dbo'",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "MultipleTableCopy",
-								"type": "DatasetReference",
-								"parameters": {
-									"DBName": {
-										"value": "@pipeline().parameters.DBName",
-										"type": "Expression"
-									},
-									"SchemaName": {
-										"value": "@pipeline().parameters.SchemaName",
-										"type": "Expression"
-									},
-									"TableName": "test"
-								}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "ForEachTable",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "LookupTableName",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('LookupTableName').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "Copy data1",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "SqlServerSource",
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "AzureSqlSink",
-											"writeBehavior": "insert",
-											"sqlWriterUseTableLock": false
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "MultipleTableCopy",
-											"type": "DatasetReference",
-											"parameters": {
-												"DBName": {
-													"value": "@pipeline().parameters.DBName",
-													"type": "Expression"
-												},
-												"SchemaName": {
-													"value": "@pipeline().parameters.SchemaName",
-													"type": "Expression"
-												},
-												"TableName": {
-													"value": "@item().name",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "Incremental_Demo_Sink_Table",
-											"type": "DatasetReference",
-											"parameters": {
-												"DBName": {
-													"value": "@pipeline().parameters.DBName",
-													"type": "Expression"
-												},
-												"SchemaName": {
-													"value": "@pipeline().parameters.SchemaName",
-													"type": "Expression"
-												},
-												"TableName": {
-													"value": "@item().name",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
 				"parameters": {
 					"DBName": {
-						"type": "string",
-						"defaultValue": "MultipleTableCopy_Demo"
-					},
-					"SchemaName": {
-						"type": "string",
-						"defaultValue": "dbo"
-					}
-				},
-				"variables": {
-					"table_name_variable": {
 						"type": "String"
 					}
 				},
-				"folder": {
-					"name": "Demo/MultipleTableCopy"
-				},
 				"annotations": [],
-				"lastPublishTime": "2023-05-22T03:24:38Z"
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('guyinsql2019_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "integrationRuntime1",
+					"type": "IntegrationRuntimeReference"
+				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/MultipleTableCopy')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MultipleTableCopy_copy1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "LookupTableName",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"sqlReaderQuery": "select name from sys.tables t where schema_name(t.schema_id) = 'dbo'",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "MultipleTableCopy",
-								"type": "DatasetReference",
-								"parameters": {
-									"DBName": {
-										"value": "@pipeline().parameters.DBName",
-										"type": "Expression"
-									},
-									"SchemaName": {
-										"value": "@pipeline().parameters.SchemaName",
-										"type": "Expression"
-									},
-									"TableName": "test"
-								}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "ForEachTable",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "LookupTableName",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('LookupTableName').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "Set variable1",
-									"type": "SetVariable",
-									"dependsOn": [],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "table_name_variable",
-										"value": {
-											"value": "@item().name",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Copy data1",
-									"type": "Copy",
-									"dependsOn": [
-										{
-											"activity": "Set variable1",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "SqlServerSource",
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "AzureSqlSink",
-											"writeBehavior": "insert",
-											"sqlWriterUseTableLock": false
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "MultipleTableCopy",
-											"type": "DatasetReference",
-											"parameters": {
-												"DBName": {
-													"value": "@pipeline().parameters.DBName",
-													"type": "Expression"
-												},
-												"SchemaName": {
-													"value": "@pipeline().parameters.SchemaName",
-													"type": "Expression"
-												},
-												"TableName": {
-													"value": "@variables('table_name_variable')",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "Incremental_Demo_Sink_Table",
-											"type": "DatasetReference",
-											"parameters": {
-												"DBName": {
-													"value": "@pipeline().parameters.DBName",
-													"type": "Expression"
-												},
-												"SchemaName": {
-													"value": "@pipeline().parameters.SchemaName",
-													"type": "Expression"
-												},
-												"TableName": {
-													"value": "@variables('table_name_variable')",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"DBName": {
-						"type": "string",
-						"defaultValue": "MultipleTableCopy_Demo"
-					},
-					"SchemaName": {
-						"type": "string",
-						"defaultValue": "dbo"
-					}
-				},
-				"variables": {
-					"table_name_variable": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "Demo/MultipleTableCopy"
-				},
-				"annotations": [],
-				"lastPublishTime": "2023-05-22T03:20:33Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/MultipleTableCopy')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
@@ -1021,232 +222,6 @@
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-03-14T08:36:38Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Sony_File_Copy_Source')]",
-				"[concat(variables('factoryId'), '/datasets/Sony_File_Copy_Sink')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "AzureDatabricksDeltaLakeSink",
-								"importSettings": {
-									"type": "AzureDatabricksDeltaLakeImportCommand"
-								}
-							},
-							"enableStaging": true,
-							"stagingSettings": {
-								"linkedServiceName": {
-									"referenceName": "guyinadls",
-									"type": "LinkedServiceReference"
-								},
-								"path": "datafactory/staging"
-							},
-							"translator": {
-								"value": "@json('{\n\t\"type\": \"TabularTranslator\",\n\t\"mappings\": [\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"MovieID\",\n\t\t\t\t\"type\": \"Guid\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Movie_ID\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"MovieTitle\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Movie_Title\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"Category\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Category\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"Rating\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Rating\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"RunTimeMin\",\n\t\t\t\t\"type\": \"Int16\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"RunTime_Min\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"ReleaseDate\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Release_Date\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t}\n\t]\n}')",
-								"type": "Expression"
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CDMP_SQL2019",
-								"type": "DatasetReference",
-								"parameters": {
-									"SchemaName": "dbo",
-									"TableName": "Movies",
-									"DBName": "Rentals"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CDMP_DeltaLake",
-								"type": "DatasetReference",
-								"parameters": {
-									"DBName": "default",
-									"TableName": "Movies"
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "Ford/CDMP"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-10-19T10:07:25Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Lookup Tables",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "select * from dbo.TableMapping",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "CDMP_AzureSQL",
-								"type": "DatasetReference",
-								"parameters": {
-									"TableName": "TableMapping",
-									"SchemaName": "dbo",
-									"DBName": "testdb"
-								}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "For Each Table",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Lookup Tables",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Lookup Tables').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "Copy data1",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "SqlServerSource",
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"sink": {
-											"type": "AzureDatabricksDeltaLakeSink",
-											"importSettings": {
-												"type": "AzureDatabricksDeltaLakeImportCommand"
-											}
-										},
-										"enableStaging": true,
-										"stagingSettings": {
-											"linkedServiceName": {
-												"referenceName": "guyinadls",
-												"type": "LinkedServiceReference"
-											},
-											"path": "datafactory/staging"
-										},
-										"translator": {
-											"value": "@json(item().Mapping)",
-											"type": "Expression"
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "CDMP_SQL2019",
-											"type": "DatasetReference",
-											"parameters": {
-												"SchemaName": {
-													"value": "@item().SourceSchema",
-													"type": "Expression"
-												},
-												"TableName": {
-													"value": "@item().SourceTable",
-													"type": "Expression"
-												},
-												"DBName": {
-													"value": "@item().SourceDB",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "CDMP_DeltaLake",
-											"type": "DatasetReference",
-											"parameters": {
-												"DBName": {
-													"value": "@item().SinkDB",
-													"type": "Expression"
-												},
-												"TableName": {
-													"value": "@item().SinkTable",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "Ford/CDMP"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-10-19T10:07:25Z"
 			},
 			"dependsOn": []
 		},
@@ -1349,106 +324,261 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline6')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/CDMP_SQL2019')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "SQLServerSourceDataSet",
-								"type": "DatasetReference",
-								"parameters": {
-									"SchemaName": "dbo",
-									"TableName": {
-										"value": "@pipeline().parameters.SourceTableName",
-										"type": "Expression"
-									},
-									"SourceDBName": {
-										"value": "@pipeline().parameters.SourceDBName",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "AzureSqlTargetDataSet",
-								"type": "DatasetReference",
-								"parameters": {
-									"SchemaName": "dbo",
-									"TableName": {
-										"value": "@pipeline().parameters.SinkTableName",
-										"type": "Expression"
-									},
-									"SinkDBName": {
-										"value": "@pipeline().parameters.SinkDBName",
-										"type": "Expression"
-									}
-								}
-							}
-						]
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
 					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
 				},
 				"parameters": {
-					"SourceDBName": {
+					"SchemaName": {
 						"type": "string"
 					},
-					"SourceTableName": {
+					"TableName": {
 						"type": "string"
 					},
-					"SinkDBName": {
-						"type": "string"
-					},
-					"SinkTableName": {
+					"DBName": {
 						"type": "string"
 					}
 				},
 				"folder": {
-					"name": "Demo/SimpleCopy"
+					"name": "Ford/CDMP"
 				},
 				"annotations": [],
-				"lastPublishTime": "2023-05-15T08:15:20Z"
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SQLServerSourceDataSet')]"
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Incremental_Demo_Source_Table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "String",
+						"defaultValue": "Incremental_Demo"
+					},
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/Incremental_Demo"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MultipleTableCopy')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					},
+					"SchemaName": {
+						"type": "String"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/MultipleTableCopy"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLServerSourceDataSet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					},
+					"SourceDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Demo/Simple Copy"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/guyinsql2019_movies')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "movies"
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/Full Demo"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "movie",
+						"type": "nchar"
+					},
+					{
+						"name": "title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "genres",
+						"type": "nvarchar"
+					},
+					{
+						"name": "year",
+						"type": "nchar"
+					},
+					{
+						"name": "Rating",
+						"type": "nchar"
+					},
+					{
+						"name": "Rotton Tomato",
+						"type": "nchar"
+					}
+				],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
 			]
 		},
 		{
@@ -1836,6 +966,925 @@
 				"[concat(variables('factoryId'), '/dataflows/TransformMovies')]",
 				"[concat(variables('factoryId'), '/datasets/guyinsql_MoviesDB')]",
 				"[concat(variables('factoryId'), '/datasets/Staging_Binary')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Incremental_Demo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupOldWaterMarkActivity",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select * from watermarktable where TableName  =  ''', pipeline().parameters.TableName,'''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Watemark_DataSet",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "LookupNewWaterMarkActivity",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select MAX(Creationtime) as NewWatermarkvalue from ', pipeline().parameters.TableName)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Incremental_Demo_Source_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "IncrementalCopyActivity",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "LookupOldWaterMarkActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "LookupNewWaterMarkActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select * from ', pipeline().parameters.TableName, ' where Creationtime > ''', activity('LookupOldWaterMarkActivity').output.firstRow.WatermarkValue, ''' and Creationtime <= ''', activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue,'''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Incremental_Demo_Source_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Incremental_Demo_Sink_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "StoredProceduretoWriteWatermarkActivity",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "IncrementalCopyActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[usp_write_watermark]",
+							"storedProcedureParameters": {
+								"LastModifiedtime": {
+									"value": {
+										"value": "@{activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue}",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								},
+								"TableName": {
+									"value": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "guyinsql",
+							"type": "LinkedServiceReference",
+							"parameters": {
+								"DBName": "Incremental_Demo"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"variables": {
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/SimpleCopy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-22T08:44:12Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Watemark_DataSet')]",
+				"[concat(variables('factoryId'), '/datasets/Incremental_Demo_Source_Table')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MultipleTableCopy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupTableName",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "select name from sys.tables t where schema_name(t.schema_id) = 'dbo'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "MultipleTableCopy",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": {
+										"value": "@pipeline().parameters.DBName",
+										"type": "Expression"
+									},
+									"SchemaName": {
+										"value": "@pipeline().parameters.SchemaName",
+										"type": "Expression"
+									},
+									"TableName": "test"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEachTable",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "LookupTableName",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('LookupTableName').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "MultipleTableCopy",
+											"type": "DatasetReference",
+											"parameters": {
+												"DBName": {
+													"value": "@pipeline().parameters.DBName",
+													"type": "Expression"
+												},
+												"SchemaName": {
+													"value": "@pipeline().parameters.SchemaName",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Incremental_Demo_Sink_Table",
+											"type": "DatasetReference",
+											"parameters": {
+												"DBName": {
+													"value": "@pipeline().parameters.DBName",
+													"type": "Expression"
+												},
+												"SchemaName": {
+													"value": "@pipeline().parameters.SchemaName",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "string",
+						"defaultValue": "MultipleTableCopy_Demo"
+					},
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					}
+				},
+				"variables": {
+					"table_name_variable": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/MultipleTableCopy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-22T03:24:38Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/MultipleTableCopy')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MultipleTableCopy_copy1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupTableName",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "select name from sys.tables t where schema_name(t.schema_id) = 'dbo'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "MultipleTableCopy",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": {
+										"value": "@pipeline().parameters.DBName",
+										"type": "Expression"
+									},
+									"SchemaName": {
+										"value": "@pipeline().parameters.SchemaName",
+										"type": "Expression"
+									},
+									"TableName": "test"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEachTable",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "LookupTableName",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('LookupTableName').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Set variable1",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "table_name_variable",
+										"value": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Set variable1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "MultipleTableCopy",
+											"type": "DatasetReference",
+											"parameters": {
+												"DBName": {
+													"value": "@pipeline().parameters.DBName",
+													"type": "Expression"
+												},
+												"SchemaName": {
+													"value": "@pipeline().parameters.SchemaName",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@variables('table_name_variable')",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Incremental_Demo_Sink_Table",
+											"type": "DatasetReference",
+											"parameters": {
+												"DBName": {
+													"value": "@pipeline().parameters.DBName",
+													"type": "Expression"
+												},
+												"SchemaName": {
+													"value": "@pipeline().parameters.SchemaName",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@variables('table_name_variable')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "string",
+						"defaultValue": "MultipleTableCopy_Demo"
+					},
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					}
+				},
+				"variables": {
+					"table_name_variable": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/MultipleTableCopy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-22T03:20:33Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/MultipleTableCopy')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureDatabricksDeltaLakeSink",
+								"importSettings": {
+									"type": "AzureDatabricksDeltaLakeImportCommand"
+								}
+							},
+							"enableStaging": true,
+							"stagingSettings": {
+								"linkedServiceName": {
+									"referenceName": "guyinadls",
+									"type": "LinkedServiceReference"
+								},
+								"path": "datafactory/staging"
+							},
+							"translator": {
+								"value": "@json('{\n\t\"type\": \"TabularTranslator\",\n\t\"mappings\": [\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"MovieID\",\n\t\t\t\t\"type\": \"Guid\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Movie_ID\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"MovieTitle\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Movie_Title\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"Category\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Category\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"Rating\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Rating\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"RunTimeMin\",\n\t\t\t\t\"type\": \"Int16\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"RunTime_Min\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"ReleaseDate\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Release_Date\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t}\n\t]\n}')",
+								"type": "Expression"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "CDMP_SQL2019",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": "Movies",
+									"DBName": "Rentals"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "CDMP_DeltaLake",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "default",
+									"TableName": "Movies"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Ford/CDMP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-19T10:07:25Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/CDMP_SQL2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup Tables",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select * from dbo.TableMapping",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "CDMP_AzureSQL",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "TableMapping",
+									"SchemaName": "dbo",
+									"DBName": "testdb"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "For Each Table",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup Tables",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup Tables').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "AzureDatabricksDeltaLakeSink",
+											"importSettings": {
+												"type": "AzureDatabricksDeltaLakeImportCommand"
+											}
+										},
+										"enableStaging": true,
+										"stagingSettings": {
+											"linkedServiceName": {
+												"referenceName": "guyinadls",
+												"type": "LinkedServiceReference"
+											},
+											"path": "datafactory/staging"
+										},
+										"translator": {
+											"value": "@json(item().Mapping)",
+											"type": "Expression"
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "CDMP_SQL2019",
+											"type": "DatasetReference",
+											"parameters": {
+												"SchemaName": {
+													"value": "@item().SourceSchema",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@item().SourceTable",
+													"type": "Expression"
+												},
+												"DBName": {
+													"value": "@item().SourceDB",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "CDMP_DeltaLake",
+											"type": "DatasetReference",
+											"parameters": {
+												"DBName": {
+													"value": "@item().SinkDB",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@item().SinkTable",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Ford/CDMP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-19T10:07:25Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/CDMP_SQL2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline6')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SQLServerSourceDataSet",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.SourceTableName",
+										"type": "Expression"
+									},
+									"SourceDBName": {
+										"value": "@pipeline().parameters.SourceDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTargetDataSet",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.SinkTableName",
+										"type": "Expression"
+									},
+									"SinkDBName": {
+										"value": "@pipeline().parameters.SinkDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "string"
+					},
+					"SourceTableName": {
+						"type": "string"
+					},
+					"SinkDBName": {
+						"type": "string"
+					},
+					"SinkTableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Demo/SimpleCopy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-15T08:15:20Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SQLServerSourceDataSet')]"
 			]
 		}
 	]

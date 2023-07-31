@@ -82,9 +82,6 @@
 					"guyinsql_connectionString": {
 						"value": "[parameters('guyinsql_connectionString')]"
 					},
-					"guyinsql2019_connectionString": {
-						"value": "[parameters('guyinsql2019_connectionString')]"
-					},
 					"guyinstoragev2_connectionString": {
 						"value": "[parameters('guyinstoragev2_connectionString')]"
 					},
@@ -108,6 +105,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"guyinsql2019_connectionString": {
+						"value": "[parameters('guyinsql2019_connectionString')]"
 					}
 				}
 			},
