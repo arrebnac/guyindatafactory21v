@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "guyindatafactory"
+		},
+		"AzureDatabricksDeltaLake_accessToken": {
+			"value": ""
+		},
+		"AzureMySql1_connectionString": {
+			"value": ""
+		},
+		"Sony_XML_AzureSqlDatabase_connectionString": {
+			"value": ""
+		},
+		"guyinadls_accountKey": {
+			"value": ""
+		},
+		"guyindatabricks_accessToken": {
+			"value": ""
+		},
+		"guyinsql_connectionString": {
+			"value": ""
+		},
+		"guyinsql2019_connectionString": {
+			"value": ""
+		},
+		"guyinstoragev2_connectionString": {
+			"value": ""
+		},
+		"guyinadls_properties_typeProperties_url": {
+			"value": "https://guyinadls.dfs.core.chinacloudapi.cn/"
+		},
+		"StorageTrigger_properties_pipeline1_parameters_FileName": {
+			"value": "@triggerBody().fileName"
+		},
+		"StorageTrigger_properties_typeProperties_scope": {
+			"value": "/subscriptions/e07f04f0-fa81-48d1-927e-212f1beca349/resourceGroups/guyinstorage/providers/Microsoft.Storage/storageAccounts/guyinadls"
+		}
+	}
+}

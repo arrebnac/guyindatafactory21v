@@ -1,0 +1,179 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "guyindatafactory"
+		},
+		"AzureDatabricksDeltaLake_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricksDeltaLake'"
+		},
+		"AzureMySql1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureMySql1'"
+		},
+		"Sony_XML_AzureSqlDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Sony_XML_AzureSqlDatabase'"
+		},
+		"guyinadls_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'guyinadls'"
+		},
+		"guyindatabricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'guyindatabricks'"
+		},
+		"guyinsql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'guyinsql'"
+		},
+		"guyinsql2019_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'guyinsql2019'"
+		},
+		"guyinstoragev2_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'guyinstoragev2'"
+		},
+		"guyinadls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://guyinadls.dfs.core.chinacloudapi.cn/"
+		},
+		"StorageTrigger_properties_pipeline1_parameters_FileName": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"StorageTrigger_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/e07f04f0-fa81-48d1-927e-212f1beca349/resourceGroups/guyinstorage/providers/Microsoft.Storage/storageAccounts/guyinadls"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "guyindatafactory_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureDatabricksDeltaLake_accessToken": {
+						"value": "[parameters('AzureDatabricksDeltaLake_accessToken')]"
+					},
+					"AzureMySql1_connectionString": {
+						"value": "[parameters('AzureMySql1_connectionString')]"
+					},
+					"Sony_XML_AzureSqlDatabase_connectionString": {
+						"value": "[parameters('Sony_XML_AzureSqlDatabase_connectionString')]"
+					},
+					"guyinadls_accountKey": {
+						"value": "[parameters('guyinadls_accountKey')]"
+					},
+					"guyindatabricks_accessToken": {
+						"value": "[parameters('guyindatabricks_accessToken')]"
+					},
+					"guyinsql_connectionString": {
+						"value": "[parameters('guyinsql_connectionString')]"
+					},
+					"guyinsql2019_connectionString": {
+						"value": "[parameters('guyinsql2019_connectionString')]"
+					},
+					"guyinstoragev2_connectionString": {
+						"value": "[parameters('guyinstoragev2_connectionString')]"
+					},
+					"guyinadls_properties_typeProperties_url": {
+						"value": "[parameters('guyinadls_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "guyindatafactory_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'guyindatafactory_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "guyindatafactory_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'guyindatafactory_ArmTemplate_1')]"
+			]
+		},
+		{
+			"name": "guyindatafactory_ArmTemplate_3",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"StorageTrigger_properties_pipeline1_parameters_FileName": {
+						"value": "[parameters('StorageTrigger_properties_pipeline1_parameters_FileName')]"
+					},
+					"StorageTrigger_properties_typeProperties_scope": {
+						"value": "[parameters('StorageTrigger_properties_typeProperties_scope')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'guyindatafactory_ArmTemplate_2')]"
+			]
+		}
+	]
+}

@@ -1,0 +1,5568 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "guyindatafactory"
+		},
+		"AzureDatabricksDeltaLake_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricksDeltaLake'"
+		},
+		"AzureMySql1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureMySql1'"
+		},
+		"Sony_XML_AzureSqlDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Sony_XML_AzureSqlDatabase'"
+		},
+		"guyinadls_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'guyinadls'"
+		},
+		"guyindatabricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'guyindatabricks'"
+		},
+		"guyinsql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'guyinsql'"
+		},
+		"guyinsql2019_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'guyinsql2019'"
+		},
+		"guyinstoragev2_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'guyinstoragev2'"
+		},
+		"guyinadls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://guyinadls.dfs.core.chinacloudapi.cn/"
+		},
+		"StorageTrigger_properties_pipeline1_parameters_FileName": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"StorageTrigger_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/e07f04f0-fa81-48d1-927e-212f1beca349/resourceGroups/guyinstorage/providers/Microsoft.Storage/storageAccounts/guyinadls"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/DataFlow_Demo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "TransformMovies",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "TransformMovies",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"MoviesDB": {},
+									"Sink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "None",
+							"cacheSinks": {
+								"firstRowOnly": true
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Demo/DataFlow_Demo"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-24T09:56:23Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/TransformMovies')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Databricks_Jar')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ScalaHelloWorld",
+						"type": "DatabricksSparkJar",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"mainClassName": "com.guyin.scala.databricks.azure.HelloWorld",
+							"parameters": [
+								"@formatDateTime(addDays(convertFromUtc(utcNow(), 'China Standard Time'), -1), 'yyyy-MM-dd')"
+							],
+							"libraries": [
+								{
+									"jar": "dbfs:/FileStore/jars/e8b63cb0_443f_4e4b_bf2e_bcec8b9971a2-HelloWorld.jar"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "guyindatabricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Demo/Databricks_Demo"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-06T09:43:53Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyindatabricks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Databricks_Notebook')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Test",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/test",
+							"baseParameters": {
+								"test": "formatDateTime(convertFromUtc(utcnow(), 'China Standard Time'), 'yyyy-MM-dd')"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "guyindatabricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Demo/Databricks_Demo"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-15T05:23:47Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyindatabricks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Full_Demo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "SQL Server To ADLS Staging",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "guyinsql2019_movies",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": "Movies"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "MovieDB_Source",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Data Transform",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "SQL Server To ADLS Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "TransformMovies",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"MoviesDB": {},
+									"Sink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "ADLS DWD To Comedy Table",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Data Transform",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "year",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Year",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "AverageComedyRating",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "AverageComedyRating",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "MoviesSink",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "guyinsql_MoviesDB",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": "Comedy"
+								}
+							}
+						]
+					},
+					{
+						"name": "Move Staging File to Backup",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "ADLS DWD To Comedy Table",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BinarySource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							},
+							"sink": {
+								"type": "BinarySink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "Staging_Binary",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Backup_Binary",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Delete File",
+						"type": "Delete",
+						"dependsOn": [
+							{
+								"activity": "Move Staging File to Backup",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "MovieDB_Source",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Demo/Full Demo"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-19T04:18:18Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/guyinsql2019_movies')]",
+				"[concat(variables('factoryId'), '/datasets/MovieDB_Source')]",
+				"[concat(variables('factoryId'), '/dataflows/TransformMovies')]",
+				"[concat(variables('factoryId'), '/datasets/MoviesSink')]",
+				"[concat(variables('factoryId'), '/datasets/guyinsql_MoviesDB')]",
+				"[concat(variables('factoryId'), '/datasets/Staging_Binary')]",
+				"[concat(variables('factoryId'), '/datasets/Backup_Binary')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Increment_fwang125')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupOldWaterMarkActivity",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select * from watermarktable where TableName  =  ''', pipeline().parameters.TableName,'''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Watermark_Incre_fwang125",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "LookupNewWaterMarkActivity",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select * from watermarktable where TableName  =  ''', pipeline().parameters.TableName,'''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Increment_Source_fwang125",
+								"type": "DatasetReference",
+								"parameters": {
+									"Incre_sourcedb": "Incremental_Demo",
+									"Incre_sourceSchema": "dbo",
+									"Incre_sourceTable": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "IncrementalCopyActivity",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "LookupOldWaterMarkActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "LookupNewWaterMarkActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select * from ', pipeline().parameters.TableName, ' where Creationtime > ''', activity('LookupOldWaterMarkActivity').output.firstRow.WatermarkValue, ''' and Creationtime <= ''', activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue,'''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Increment_Source_fwang125",
+								"type": "DatasetReference",
+								"parameters": {
+									"Incre_sourcedb": "Incremental_Demo",
+									"Incre_sourceSchema": "dbo",
+									"Incre_sourceTable": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Incremental_Sink_fwang125",
+								"type": "DatasetReference",
+								"parameters": {
+									"Incre_sinkDB": "Incremental_Demo",
+									"Incre_sinkSchema": "dbo",
+									"Incre_sinkTable": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "StoredProceduretoWriteWatermarkActivity",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "IncrementalCopyActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[usp_write_watermark]",
+							"storedProcedureParameters": {
+								"LastModifiedtime": {
+									"value": {
+										"value": "@{activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue}",
+										"type": "Expression"
+									},
+									"type": "Datetime"
+								},
+								"TableName": {
+									"value": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "guyinsql",
+							"type": "LinkedServiceReference",
+							"parameters": {
+								"DBName": "Incremental_Demo"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/fwang125"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-22T07:09:54Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Watermark_Incre_fwang125')]",
+				"[concat(variables('factoryId'), '/datasets/Increment_Source_fwang125')]",
+				"[concat(variables('factoryId'), '/datasets/Incremental_Sink_fwang125')]",
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Incremental_Demo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupOldWaterMarkActivity",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select * from watermarktable where TableName  =  ''', pipeline().parameters.TableName,'''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Watemark_DataSet",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "LookupNewWaterMarkActivity",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select MAX(Creationtime) as NewWatermarkvalue from ', pipeline().parameters.TableName)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Incremental_Demo_Source_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "IncrementalCopyActivity",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "LookupOldWaterMarkActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "LookupNewWaterMarkActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select * from ', pipeline().parameters.TableName, ' where Creationtime > ''', activity('LookupOldWaterMarkActivity').output.firstRow.WatermarkValue, ''' and Creationtime <= ''', activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue,'''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Incremental_Demo_Source_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Incremental_Demo_Sink_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "StoredProceduretoWriteWatermarkActivity",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "IncrementalCopyActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[usp_write_watermark]",
+							"storedProcedureParameters": {
+								"LastModifiedtime": {
+									"value": {
+										"value": "@{activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue}",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								},
+								"TableName": {
+									"value": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "guyinsql",
+							"type": "LinkedServiceReference",
+							"parameters": {
+								"DBName": "Incremental_Demo"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"variables": {
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/SimpleCopy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-22T08:44:12Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Watemark_DataSet')]",
+				"[concat(variables('factoryId'), '/datasets/Incremental_Demo_Source_Table')]",
+				"[concat(variables('factoryId'), '/datasets/Incremental_Demo_Sink_Table')]",
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MultipleTableCopy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupTableName",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "select name from sys.tables t where schema_name(t.schema_id) = 'dbo'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "MultipleTableCopy",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": {
+										"value": "@pipeline().parameters.DBName",
+										"type": "Expression"
+									},
+									"SchemaName": {
+										"value": "@pipeline().parameters.SchemaName",
+										"type": "Expression"
+									},
+									"TableName": "test"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEachTable",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "LookupTableName",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('LookupTableName').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "MultipleTableCopy",
+											"type": "DatasetReference",
+											"parameters": {
+												"DBName": {
+													"value": "@pipeline().parameters.DBName",
+													"type": "Expression"
+												},
+												"SchemaName": {
+													"value": "@pipeline().parameters.SchemaName",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Incremental_Demo_Sink_Table",
+											"type": "DatasetReference",
+											"parameters": {
+												"DBName": {
+													"value": "@pipeline().parameters.DBName",
+													"type": "Expression"
+												},
+												"SchemaName": {
+													"value": "@pipeline().parameters.SchemaName",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "string",
+						"defaultValue": "MultipleTableCopy_Demo"
+					},
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					}
+				},
+				"variables": {
+					"table_name_variable": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/MultipleTableCopy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-22T03:24:38Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/MultipleTableCopy')]",
+				"[concat(variables('factoryId'), '/datasets/Incremental_Demo_Sink_Table')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MultipleTableCopy_copy1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupTableName",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "select name from sys.tables t where schema_name(t.schema_id) = 'dbo'",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "MultipleTableCopy",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": {
+										"value": "@pipeline().parameters.DBName",
+										"type": "Expression"
+									},
+									"SchemaName": {
+										"value": "@pipeline().parameters.SchemaName",
+										"type": "Expression"
+									},
+									"TableName": "test"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEachTable",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "LookupTableName",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('LookupTableName').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Set variable1",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "table_name_variable",
+										"value": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Set variable1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "MultipleTableCopy",
+											"type": "DatasetReference",
+											"parameters": {
+												"DBName": {
+													"value": "@pipeline().parameters.DBName",
+													"type": "Expression"
+												},
+												"SchemaName": {
+													"value": "@pipeline().parameters.SchemaName",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@variables('table_name_variable')",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Incremental_Demo_Sink_Table",
+											"type": "DatasetReference",
+											"parameters": {
+												"DBName": {
+													"value": "@pipeline().parameters.DBName",
+													"type": "Expression"
+												},
+												"SchemaName": {
+													"value": "@pipeline().parameters.SchemaName",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@variables('table_name_variable')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "string",
+						"defaultValue": "MultipleTableCopy_Demo"
+					},
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					}
+				},
+				"variables": {
+					"table_name_variable": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/MultipleTableCopy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-22T03:20:33Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/MultipleTableCopy')]",
+				"[concat(variables('factoryId'), '/datasets/Incremental_Demo_Sink_Table')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/XMAOpipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "XMAOSOurceDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.SourceTableName",
+										"type": "Expression"
+									},
+									"SourceDBName": {
+										"value": "@pipeline().parameters.SourceDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "XMAOTargetDataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.SinkTableName",
+										"type": "Expression"
+									},
+									"SinkDBName": {
+										"value": "@pipeline().parameters.SinkDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "string",
+						"defaultValue": "Movies"
+					},
+					"SourceTableName": {
+						"type": "string",
+						"defaultValue": "Movies"
+					},
+					"SinkDBName": {
+						"type": "string",
+						"defaultValue": "testdb"
+					},
+					"SinkTableName": {
+						"type": "string",
+						"defaultValue": "Movies_xmao11"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/XMAO"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-22T08:44:13Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/XMAOSOurceDataset')]",
+				"[concat(variables('factoryId'), '/datasets/XMAOTargetDataset')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/XML_Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "XmlSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.xml",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "XmlReadSettings",
+									"validationMode": "none",
+									"namespaces": true
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['DO_No']"
+										},
+										"sink": {
+											"name": "DO_No",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['DeliveryActionCode']"
+										},
+										"sink": {
+											"name": "DeliveryActionCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['DeliveryNotice']"
+										},
+										"sink": {
+											"name": "DeliveryNotice",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['SAPDOType']"
+										},
+										"sink": {
+											"name": "SAPDOType",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['ShiptopartyPurchaseOrder_No']"
+										},
+										"sink": {
+											"name": "ShiptopartyPurchaseOrder_No",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['DivisionDescription']"
+										},
+										"sink": {
+											"name": "DivisionDescription",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['Soldtocode']"
+										},
+										"sink": {
+											"name": "Soldtocode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['Soldtoname']"
+										},
+										"sink": {
+											"name": "Soldtoname",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['Shiptocode']"
+										},
+										"sink": {
+											"name": "Shiptocode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['Shiptoname']"
+										},
+										"sink": {
+											"name": "Shiptoname",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['DOCreationDateTime']"
+										},
+										"sink": {
+											"name": "DOCreationDateTime",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['ID']"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['MaterialCode']"
+										},
+										"sink": {
+											"name": "MaterialCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['MaterialDescription']"
+										},
+										"sink": {
+											"name": "MaterialDescription",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Quantity']"
+										},
+										"sink": {
+											"name": "Quantity",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Unit']"
+										},
+										"sink": {
+											"name": "Unit",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['SixDCode']"
+										},
+										"sink": {
+											"name": "SixDCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['SC_No']"
+										},
+										"sink": {
+											"name": "SC_No",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['PO_No']"
+										},
+										"sink": {
+											"name": "PO_No",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['IssuePlant']"
+										},
+										"sink": {
+											"name": "IssuePlant",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['IssueStorageLocation']"
+										},
+										"sink": {
+											"name": "IssueStorageLocation",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['ReceivingStorageLocation']"
+										},
+										"sink": {
+											"name": "ReceivingStorageLocation",
+											"type": "String"
+										}
+									}
+								],
+								"collectionReference": "$['ns1:MT_rainbow_deliveryorder']['RBW_DeliveryOrder']['Item']",
+								"mapComplexValuesToString": true
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Sony_XML_Blob",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Sony_XML_AzureSqlDatabase",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-03-14T02:09:29Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Sony_XML_Blob')]",
+				"[concat(variables('factoryId'), '/datasets/Sony_XML_AzureSqlDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BinarySource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							},
+							"sink": {
+								"type": "BinarySink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "Sony_File_Copy_Source",
+								"type": "DatasetReference",
+								"parameters": {
+									"FileName": {
+										"value": "@pipeline().parameters.FileName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Sony_File_Copy_Sink",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"FileName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-03-14T08:36:38Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Sony_File_Copy_Source')]",
+				"[concat(variables('factoryId'), '/datasets/Sony_File_Copy_Sink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureDatabricksDeltaLakeSink",
+								"importSettings": {
+									"type": "AzureDatabricksDeltaLakeImportCommand"
+								}
+							},
+							"enableStaging": true,
+							"stagingSettings": {
+								"linkedServiceName": {
+									"referenceName": "guyinadls",
+									"type": "LinkedServiceReference"
+								},
+								"path": "datafactory/staging"
+							},
+							"translator": {
+								"value": "@json('{\n\t\"type\": \"TabularTranslator\",\n\t\"mappings\": [\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"MovieID\",\n\t\t\t\t\"type\": \"Guid\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Movie_ID\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"MovieTitle\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Movie_Title\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"Category\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Category\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"Rating\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Rating\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"RunTimeMin\",\n\t\t\t\t\"type\": \"Int16\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"RunTime_Min\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"source\": {\n\t\t\t\t\"name\": \"ReleaseDate\",\n\t\t\t\t\"type\": \"String\"\n\t\t\t},\n\t\t\t\"sink\": {\n\t\t\t\t\"name\": \"Release_Date\",\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n\t\t}\n\t]\n}')",
+								"type": "Expression"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "CDMP_SQL2019",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": "Movies",
+									"DBName": "Rentals"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "CDMP_DeltaLake",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "default",
+									"TableName": "Movies"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Ford/CDMP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-19T10:07:25Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/CDMP_SQL2019')]",
+				"[concat(variables('factoryId'), '/datasets/CDMP_DeltaLake')]",
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup Tables",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select * from dbo.TableMapping",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "CDMP_AzureSQL",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": "TableMapping",
+									"SchemaName": "dbo",
+									"DBName": "testdb"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "For Each Table",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup Tables",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup Tables').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "AzureDatabricksDeltaLakeSink",
+											"importSettings": {
+												"type": "AzureDatabricksDeltaLakeImportCommand"
+											}
+										},
+										"enableStaging": true,
+										"stagingSettings": {
+											"linkedServiceName": {
+												"referenceName": "guyinadls",
+												"type": "LinkedServiceReference"
+											},
+											"path": "datafactory/staging"
+										},
+										"translator": {
+											"value": "@json(item().Mapping)",
+											"type": "Expression"
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "CDMP_SQL2019",
+											"type": "DatasetReference",
+											"parameters": {
+												"SchemaName": {
+													"value": "@item().SourceSchema",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@item().SourceTable",
+													"type": "Expression"
+												},
+												"DBName": {
+													"value": "@item().SourceDB",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "CDMP_DeltaLake",
+											"type": "DatasetReference",
+											"parameters": {
+												"DBName": {
+													"value": "@item().SinkDB",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@item().SinkTable",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Ford/CDMP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-19T10:07:25Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/CDMP_AzureSQL')]",
+				"[concat(variables('factoryId'), '/datasets/CDMP_SQL2019')]",
+				"[concat(variables('factoryId'), '/datasets/CDMP_DeltaLake')]",
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline4')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "AzureDatabricksDeltaLakeSink",
+								"importSettings": {
+									"type": "AzureDatabricksDeltaLakeImportCommand"
+								}
+							},
+							"enableStaging": true,
+							"stagingSettings": {
+								"linkedServiceName": {
+									"referenceName": "guyinadls",
+									"type": "LinkedServiceReference"
+								},
+								"path": "datafactory/staging"
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Colume1",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Colume1",
+											"type": "string"
+										}
+									},
+									{
+										"source": {
+											"name": "Colume2",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Colume2",
+											"type": "string"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "CDMP_Excel",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "CDMP_DeltaLake",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "default",
+									"TableName": "excel_test"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Ford/CDMP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-12-21T07:51:03Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/CDMP_Excel')]",
+				"[concat(variables('factoryId'), '/datasets/CDMP_DeltaLake')]",
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline5')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "pt",
+							"value": {
+								"value": "@formatDateTime(convertTimeZone(utcnow(),'UTC','China Standard Time'), 'yyyyMMdd')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"pt": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/DCSP"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-03-10T01:25:37Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline6')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SQLServerSourceDataSet",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.SourceTableName",
+										"type": "Expression"
+									},
+									"SourceDBName": {
+										"value": "@pipeline().parameters.SourceDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTargetDataSet",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.SinkTableName",
+										"type": "Expression"
+									},
+									"SinkDBName": {
+										"value": "@pipeline().parameters.SinkDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "string"
+					},
+					"SourceTableName": {
+						"type": "string"
+					},
+					"SinkDBName": {
+						"type": "string"
+					},
+					"SinkTableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Demo/SimpleCopy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-15T08:15:20Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SQLServerSourceDataSet')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTargetDataSet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline7')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "XZOU12_SQLSever",
+								"type": "DatasetReference",
+								"parameters": {
+									"SourceDBName": {
+										"value": "@pipeline().parameters.SourceDBName",
+										"type": "Expression"
+									},
+									"SchemaName": {
+										"value": "@pipeline().parameters.SourceSchemaName",
+										"type": "Expression"
+									},
+									"TableName": {
+										"value": "@pipeline().parameters.SourceTableName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "xzou12_AzureSQL",
+								"type": "DatasetReference",
+								"parameters": {
+									"SourceDBName": {
+										"value": "@pipeline().parameters.SinkDBName",
+										"type": "Expression"
+									},
+									"SchemaName": {
+										"value": "@pipeline().parameters.SinkSchemaName",
+										"type": "Expression"
+									},
+									"TableName": {
+										"value": "@pipeline().parameters.SinkTableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "string"
+					},
+					"SourceSchemaName": {
+						"type": "string"
+					},
+					"SourceTableName": {
+						"type": "string"
+					},
+					"SinkDBName": {
+						"type": "string"
+					},
+					"SinkSchemaName": {
+						"type": "string"
+					},
+					"SinkTableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-17T06:42:24Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/XZOU12_SQLSever')]",
+				"[concat(variables('factoryId'), '/datasets/xzou12_AzureSQL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_XCHANG6')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SqlServerXCHANG6",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.SourceTableName",
+										"type": "Expression"
+									},
+									"SourceDBName": {
+										"value": "@pipeline().parameters.SourceDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTargetDataSetXCHANG6",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.SinkTableName",
+										"type": "Expression"
+									},
+									"SinkDBName": {
+										"value": "@pipeline().parameters.SinkDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "string"
+					},
+					"SourceTableName": {
+						"type": "string"
+					},
+					"SinkDBName": {
+						"type": "string"
+					},
+					"SinkTableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-17T06:42:24Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SqlServerXCHANG6')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTargetDataSetXCHANG6')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_qzhan125')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_qzhan125",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "qzhan125_source",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": {
+										"value": "@pipeline().parameters.SourceSchema",
+										"type": "Expression"
+									},
+									"TableName": {
+										"value": "@pipeline().parameters.SourceTableName",
+										"type": "Expression"
+									},
+									"SinkDBName": {
+										"value": "@pipeline().parameters.SourceDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "qzhan125_sink",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": {
+										"value": "@pipeline().parameters.SinkSchema",
+										"type": "Expression"
+									},
+									"TableName": {
+										"value": "@pipeline().parameters.SinkTableName",
+										"type": "Expression"
+									},
+									"SourceDBName": {
+										"value": "@pipeline().parameters.SourceDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "string"
+					},
+					"SourceTableName": {
+						"type": "string"
+					},
+					"SourceSchema": {
+						"type": "string"
+					},
+					"SinkDBName": {
+						"type": "string"
+					},
+					"SinkTableName": {
+						"type": "string"
+					},
+					"SinkSchema": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-17T08:05:54Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/qzhan125_source')]",
+				"[concat(variables('factoryId'), '/datasets/qzhan125_sink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipelinefwang125')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Sourcedbfwang125",
+								"type": "DatasetReference",
+								"parameters": {
+									"SourceDBName": {
+										"value": "@pipeline().parameters.SourceDBName",
+										"type": "Expression"
+									},
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.SourceTableName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Targetdbfwag125",
+								"type": "DatasetReference",
+								"parameters": {
+									"TargetDBName": {
+										"value": "@pipeline().parameters.SinkDBName",
+										"type": "Expression"
+									},
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.SinkTableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"SinkTableName": {
+						"type": "String"
+					},
+					"SourceTableName": {
+						"type": "String"
+					},
+					"SourceDBName": {
+						"type": "String"
+					},
+					"SinkDBName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/fwang125"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-22T05:34:02Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Sourcedbfwang125')]",
+				"[concat(variables('factoryId'), '/datasets/Targetdbfwag125')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/wen_lncremental')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupOldWaterMarkActivity",
+						"description": "OldMark旧表",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select * from watermarktable where TableName = ''',pipeline().parameters.TableName,'''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Watemark_DataSet",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "IncrementalCopyActivity",
+						"description": "采集增量数据",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "LookupOldWaterMarkActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "LookupNewWaterMarkActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select * from ',pipeline().parameters.TableName,'where Creationtime>''', activity('LookupOldWaterMarkActivity').output.firstRow.WatermarkValue,''' and Creationtime <= ''', activity('LookupNewWaterMarkActivity').output.firstRow.NewWaterMarkValue,'''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Incremental_Demo_Source_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Incremental_Demo_Sink_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "LookupNewWaterMarkActivity",
+						"description": "WaterMark的新标记",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select MAX(Creationtime) as NewWaterMarkValue from ',pipeline().parameters.TableName)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "Incremental_Demo_Source_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "Stored proceduretoWriteWatermarkActivity",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "IncrementalCopyActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[usp_write_watermark]",
+							"storedProcedureParameters": {
+								"LastModifiedtime": {
+									"value": {
+										"value": "@activity('LookupNewWaterMarkActivity').output.firstRow.NewWatermarkvalue",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								},
+								"TableName": {
+									"value": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "guyinsql",
+							"type": "LinkedServiceReference",
+							"parameters": {
+								"DBName": "Incremental_Demo"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-23T01:56:08Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Watemark_DataSet')]",
+				"[concat(variables('factoryId'), '/datasets/Incremental_Demo_Source_Table')]",
+				"[concat(variables('factoryId'), '/datasets/Incremental_Demo_Sink_Table')]",
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/xmaoIncremental_Demo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupOldWaterMarkActivity",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "select * from watermarktable limit 10",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "xmao_Watemark_Dataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "LookupNewWaterMarkActivity",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "select",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "xmao_Incremental_Source_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "IncrementalCopyActivity",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "LookupOldWaterMarkActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "LookupNewWaterMarkActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "select",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "xmao_Incremental_Source_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "xmao_incremental_sink_table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "StoredProceduretoWriteWatermarkActivity",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "IncrementalCopyActivity",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[usp_write_watermark]",
+							"storedProcedureParameters": {
+								"LastModifiedtime": {
+									"value": "",
+									"type": "DateTime"
+								},
+								"TableName": {
+									"value": "",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "guyinsql",
+							"type": "LinkedServiceReference",
+							"parameters": {
+								"DBName": "Incremental_Demo"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string",
+						"defaultValue": "project_table"
+					}
+				},
+				"variables": {
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/XMAO"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-22T09:23:36Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/xmao_Watemark_Dataset')]",
+				"[concat(variables('factoryId'), '/datasets/xmao_Incremental_Source_Table')]",
+				"[concat(variables('factoryId'), '/datasets/xmao_incremental_sink_table')]",
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/xmaoTest')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LookupWartMarkSouce",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select * from watermarktable where TableName  = ''',pipeline().parameters.TableName,'''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "xmao_Watemark_Dataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							},
+							"firstRowOnly": true
+						}
+					},
+					{
+						"name": "LookupNewWartmak",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select MAX(Creationtime) as NewWatermarkvalue from ', pipeline().parameters.TableName)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "xmao_Incremental_Source_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					},
+					{
+						"name": "Copy_Incremental_Data",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "LookupWartMarkSouce",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "LookupNewWartmak",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "@concat('select * from ',pipeline().parameters.TableName,' where Creationtime>''',activity('LookupWartMarkSouce').output.firstRow.WatermarkValue,''' and Creationtime <= ''',activity('LookupNewWartmak').output.firstRow.NewWatermarkvalue,'''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "xmao_Incremental_Source_Table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "xmao_incremental_sink_table",
+								"type": "DatasetReference",
+								"parameters": {
+									"DBName": "Incremental_Demo",
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "Stored procedure1",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Copy_Incremental_Data",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[usp_write_watermark]",
+							"storedProcedureParameters": {
+								"LastModifiedtime": {
+									"value": {
+										"value": "@activity('LookupNewWartmak').output.firstRow.NewWatermarkvalue",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								},
+								"TableName": {
+									"value": {
+										"value": "@pipeline().parameters.TableName",
+										"type": "Expression"
+									},
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "guyinsql",
+							"type": "LinkedServiceReference",
+							"parameters": {
+								"DBName": "Incremental_Demo"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string",
+						"defaultValue": "project_table"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/XMAO"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-22T10:12:43Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/xmao_Watemark_Dataset')]",
+				"[concat(variables('factoryId'), '/datasets/xmao_Incremental_Source_Table')]",
+				"[concat(variables('factoryId'), '/datasets/xmao_incremental_sink_table')]",
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/xzhanpipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "xzhancopydata",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SQLServerSourceDataSetXZhan",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": "dbo",
+									"TableName": {
+										"value": "@pipeline().parameters.SourceTableName",
+										"type": "Expression"
+									},
+									"SourceDBName": {
+										"value": "@pipeline().parameters.SourceDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTargetDataSetXZhan",
+								"type": "DatasetReference",
+								"parameters": {
+									"TableName": {
+										"value": "@pipeline().parameters.SinkTableName",
+										"type": "Expression"
+									},
+									"SinkDBName": {
+										"value": "@pipeline().parameters.SinkDBName",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"SinkDbName": {
+						"type": "String",
+						"defaultValue": "testdb"
+					},
+					"SinkTableName": {
+						"type": "String",
+						"defaultValue": "Movies_XZHAN334"
+					},
+					"SourceDbName": {
+						"type": "String",
+						"defaultValue": "Movies"
+					},
+					"SourceTableName": {
+						"type": "String",
+						"defaultValue": "Movies"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/XZhanSimpleCopy"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-21T13:54:22Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SQLServerSourceDataSetXZhan')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTargetDataSetXZhan')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTargetDataSet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SinkDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					},
+					"SinkDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Demo/Simple Copy"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTargetDataSetXCHANG6')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SinkDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "string"
+					},
+					"SinkDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTargetDataSetXZhan')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SinkDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "string"
+					},
+					"SinkDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/xzhan334"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Backup_Binary')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Demo/Full Demo"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "dataflow/Bak",
+						"fileSystem": "datafactory"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CDMP_AzureSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string"
+					},
+					"SchemaName": {
+						"type": "string"
+					},
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/CDMP"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CDMP_DeltaLake')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricksDeltaLake",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"DBName": {
+						"type": "string"
+					},
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/CDMP"
+				},
+				"annotations": [],
+				"type": "AzureDatabricksDeltaLakeDataset",
+				"typeProperties": {
+					"database": {
+						"value": "@dataset().DBName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricksDeltaLake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CDMP_Excel')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Ford/CDMP"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Sheet1",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "ADF_Test.xlsx",
+						"folderPath": "Ford/CDMP/Excel",
+						"fileSystem": "datafactory"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "Colume1",
+						"type": "String"
+					},
+					{
+						"name": "Colume2",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CDMP_SQL2019')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "string"
+					},
+					"TableName": {
+						"type": "string"
+					},
+					"DBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/CDMP"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Increment_Source_fwang125')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().Incre_sourcedb",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"Incre_sourcedb": {
+						"type": "String",
+						"defaultValue": "Incremental_Demo"
+					},
+					"Incre_sourceSchema": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"Incre_sourceTable": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/fwang125"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().Incre_sourceSchema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().Incre_sourceTable",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Incremental_Demo_Sink_Table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "String",
+						"defaultValue": "Incremental_Demo"
+					},
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/Incremental_Demo"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Incremental_Demo_Source_Table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "String",
+						"defaultValue": "Incremental_Demo"
+					},
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/Incremental_Demo"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Incremental_Sink_fwang125')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().Incre_sinkDB",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"Incre_sinkDB": {
+						"type": "String",
+						"defaultValue": "Incremental_Demo"
+					},
+					"Incre_sinkSchema": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"Incre_sinkTable": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/fwang125"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().Incre_sinkSchema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().Incre_sinkTable",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LiuHuiSourceSqlserver')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "string"
+					},
+					"SchemaName": {
+						"type": "string"
+					},
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MovieDB_Source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Demo/DataFlow_Demo"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "moviesDB.csv",
+						"folderPath": "dataflow",
+						"fileSystem": "datafactory"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MoviesSink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Demo/DataFlow_Demo"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "dataflow/Target",
+						"fileSystem": "datafactory"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MultipleTableCopy')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					},
+					"SchemaName": {
+						"type": "String"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/MultipleTableCopy"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLServerSourceDataSet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					},
+					"SourceDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Demo/Simple Copy"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLServerSourceDataSetXZhan')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "string"
+					},
+					"SourceDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/xzhan334"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureMySql1",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "Sink"
+					}
+				},
+				"folder": {
+					"name": "Ford/DCSP"
+				},
+				"annotations": [],
+				"type": "AzureMySqlTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": "`test`"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureMySql1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_File_Copy_Sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Sony/XML",
+						"fileSystem": "datafactory"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_File_Copy_Source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"FileName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().FileName",
+							"type": "Expression"
+						},
+						"folderPath": "Sony/StorageTrigger",
+						"fileSystem": "datafactory"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_XML_AzureSqlDatabase')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sony_XML_AzureSqlDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DO_No",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DeliveryActionCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DeliveryNotice",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SAPDOType",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ShiptopartyPurchaseOrder_No",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DivisionDescription",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Soldtocode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Soldtoname",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Shiptocode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Shiptoname",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DOCreationDateTime",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MaterialCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MaterialDescription",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Quantity",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Unit",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SixDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SC_No",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PO_No",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IssuePlant",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IssueStorageLocation",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ReceivingStorageLocation",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Sony_XML"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sony_XML_AzureSqlDatabase')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_XML_Blob')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinstoragev2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"type": "Xml",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "XML",
+						"container": "sony"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinstoragev2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureMySql1",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "Source"
+					}
+				},
+				"folder": {
+					"name": "Ford/DCSP"
+				},
+				"annotations": [],
+				"type": "AzureMySqlTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": "`test`"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureMySql1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sourcedbfwang125')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/fwang125"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServerXCHANG6')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "string"
+					},
+					"SourceDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Staging_Binary')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Demo/Full Demo"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "moviesDB.csv",
+						"folderPath": "dataflow",
+						"fileSystem": "datafactory"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinadls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Targetdbfwag125')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().TargetDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"TargetDBName": {
+						"type": "String"
+					},
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/fwang125"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Watemark_DataSet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "String",
+						"defaultValue": "Incremental_Demo"
+					},
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/Incremental_Demo"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Watermark_Incre_fwang125')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "String",
+						"defaultValue": "Incremental_Demo"
+					},
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/fwang125"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/XMAOSOurceDataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "string"
+					},
+					"SourceDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/xmao11"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/XMAOTargetDataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SinkDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "string"
+					},
+					"SinkDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/xmao11"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/XZOU12_SQLSever')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "String"
+					},
+					"SchemaName": {
+						"type": "string"
+					},
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/guyinsql2019_movies')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "movies"
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/Full Demo"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "movie",
+						"type": "nchar"
+					},
+					{
+						"name": "title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "genres",
+						"type": "nvarchar"
+					},
+					{
+						"name": "year",
+						"type": "nchar"
+					},
+					{
+						"name": "Rating",
+						"type": "nchar"
+					},
+					{
+						"name": "Rotton Tomato",
+						"type": "nchar"
+					}
+				],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/guyinsql_MoviesDB')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "MoviesDB"
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/Full Demo"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/qzhan125_sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "String"
+					},
+					"TableName": {
+						"type": "String"
+					},
+					"SourceDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/qzhan12"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/qzhan125_source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SinkDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "string"
+					},
+					"TableName": {
+						"type": "string"
+					},
+					"SinkDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/qzhan12"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/xmao_Incremental_Source_Table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "string",
+						"defaultValue": "Incremental_Demo"
+					},
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/xmao11"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql2019')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/xmao_Watemark_Dataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "string",
+						"defaultValue": "Incremental_Demo"
+					},
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/xmao11"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/xmao_incremental_sink_table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "string",
+						"defaultValue": "Incremental_Demo"
+					},
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/xmao11"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/xzou12_AzureSQL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "string"
+					},
+					"SchemaName": {
+						"type": "string"
+					},
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricksDeltaLake')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricksDeltaLake",
+				"typeProperties": {
+					"domain": "https://adb-6486676399123065.1.databricks.azure.cn/",
+					"clusterId": "0516-030745-l932n3cy",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricksDeltaLake_accessToken')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureMySql1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureMySql",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureMySql1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_XML_AzureSqlDatabase')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('Sony_XML_AzureSqlDatabase_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/guyinadls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('guyinadls_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('guyinadls_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/guyindatabricks')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-6486676399123065.1.databricks.azure.cn/",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('guyindatabricks_accessToken')]"
+					},
+					"newClusterNodeType": "Standard_DS3_v2",
+					"newClusterNumOfWorker": "1",
+					"newClusterSparkEnvVars": {
+						"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+					},
+					"newClusterVersion": "11.3.x-scala2.12",
+					"clusterOption": "Fixed",
+					"newClusterInitScripts": [],
+					"policyId": "896340817E000001"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/guyinsql')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('guyinsql_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/guyinsql2019')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('guyinsql2019_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/guyinstoragev2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('guyinstoragev2_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/StorageTrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipeline1",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"FileName": "[parameters('StorageTrigger_properties_pipeline1_parameters_FileName')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/datafactory/blobs/Sony/StorageTrigger",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('StorageTrigger_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipeline1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntime1')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TransformMovies')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "MovieDB_Source",
+								"type": "DatasetReference"
+							},
+							"name": "MoviesDB"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "MoviesSink",
+								"type": "DatasetReference"
+							},
+							"name": "Sink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "FilterYears"
+						},
+						{
+							"name": "AggregateComedyRatings"
+						}
+					],
+					"script": "source(output(\n\t\tmovie as integer,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as short,\n\t\tRating as short,\n\t\t{Rotton Tomato} as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> MoviesDB\nMoviesDB filter(toInteger(year) >= 1910 && toInteger(year) <= 2000 && rlike(genres, 'Comedy')) ~> FilterYears\nFilterYears aggregate(groupBy(year),\n\tAverageComedyRating = avg(toInteger(Rating))) ~> AggregateComedyRatings\nAggregateComedyRatings sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[('Comedy_'+toString(currentTimestamp())+'.csv')],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> Sink"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/MovieDB_Source')]",
+				"[concat(variables('factoryId'), '/datasets/MoviesSink')]"
+			]
+		}
+	]
+}

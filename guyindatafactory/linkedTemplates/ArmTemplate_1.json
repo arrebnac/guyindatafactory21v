@@ -1,0 +1,849 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "guyindatafactory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Increment_Source_fwang125')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().Incre_sourcedb",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"Incre_sourcedb": {
+						"type": "String",
+						"defaultValue": "Incremental_Demo"
+					},
+					"Incre_sourceSchema": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"Incre_sourceTable": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/fwang125"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().Incre_sourceSchema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().Incre_sourceTable",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Incremental_Demo_Sink_Table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "String",
+						"defaultValue": "Incremental_Demo"
+					},
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/Incremental_Demo"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Incremental_Demo_Source_Table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "String",
+						"defaultValue": "Incremental_Demo"
+					},
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/Incremental_Demo"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Incremental_Sink_fwang125')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().Incre_sinkDB",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"Incre_sinkDB": {
+						"type": "String",
+						"defaultValue": "Incremental_Demo"
+					},
+					"Incre_sinkSchema": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"Incre_sinkTable": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/fwang125"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().Incre_sinkSchema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().Incre_sinkTable",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LiuHuiSourceSqlserver')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "string"
+					},
+					"SchemaName": {
+						"type": "string"
+					},
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MovieDB_Source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Demo/DataFlow_Demo"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "moviesDB.csv",
+						"folderPath": "dataflow",
+						"fileSystem": "datafactory"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MoviesSink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Demo/DataFlow_Demo"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "dataflow/Target",
+						"fileSystem": "datafactory"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MultipleTableCopy')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					},
+					"SchemaName": {
+						"type": "String"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Demo/MultipleTableCopy"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLServerSourceDataSet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					},
+					"SourceDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Demo/Simple Copy"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLServerSourceDataSetXZhan')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "string"
+					},
+					"SourceDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/xzhan334"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureMySql1",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "Sink"
+					}
+				},
+				"folder": {
+					"name": "Ford/DCSP"
+				},
+				"annotations": [],
+				"type": "AzureMySqlTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": "`test`"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_File_Copy_Sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Sony/XML",
+						"fileSystem": "datafactory"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_File_Copy_Source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"FileName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().FileName",
+							"type": "Expression"
+						},
+						"folderPath": "Sony/StorageTrigger",
+						"fileSystem": "datafactory"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_XML_AzureSqlDatabase')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sony_XML_AzureSqlDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DO_No",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DeliveryActionCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DeliveryNotice",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SAPDOType",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ShiptopartyPurchaseOrder_No",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DivisionDescription",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Soldtocode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Soldtoname",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Shiptocode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Shiptoname",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DOCreationDateTime",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MaterialCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MaterialDescription",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Quantity",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Unit",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SixDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SC_No",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PO_No",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IssuePlant",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IssueStorageLocation",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ReceivingStorageLocation",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Sony_XML"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sony_XML_Blob')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinstoragev2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Sony"
+				},
+				"annotations": [],
+				"type": "Xml",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "XML",
+						"container": "sony"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureMySql1",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": "Source"
+					}
+				},
+				"folder": {
+					"name": "Ford/DCSP"
+				},
+				"annotations": [],
+				"type": "AzureMySqlTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": "`test`"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sourcedbfwang125')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SourceDBName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/fwang125"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServerXCHANG6')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql2019",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().SourceDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "string",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "string"
+					},
+					"SourceDBName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Staging_Binary')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinadls",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Demo/Full Demo"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "moviesDB.csv",
+						"folderPath": "dataflow",
+						"fileSystem": "datafactory"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Targetdbfwag125')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().TargetDBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"TargetDBName": {
+						"type": "String"
+					},
+					"SchemaName": {
+						"type": "String",
+						"defaultValue": "dbo"
+					},
+					"TableName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/SCAV+ Training/fwang125"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
