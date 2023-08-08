@@ -2417,6 +2417,54 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/guyinsqltable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "String"
+					},
+					"TableName": {
+						"type": "String",
+						"defaultValue": "TableName"
+					},
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/Ali Migration"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/guyinsql')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureDatabricksDeltaLake')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -2424,8 +2472,8 @@
 				"annotations": [],
 				"type": "AzureDatabricksDeltaLake",
 				"typeProperties": {
-					"domain": "https://adb-6486676399123065.1.databricks.azure.cn/",
-					"clusterId": "0516-030745-l932n3cy",
+					"domain": "https://adb-536663473547105.1.databricks.azure.cn",
+					"clusterId": "0606-063433-d8zf5hci",
 					"accessToken": {
 						"type": "SecureString",
 						"value": "[parameters('AzureDatabricksDeltaLake_accessToken')]"
@@ -2459,20 +2507,20 @@
 				"annotations": [],
 				"type": "AzureDatabricks",
 				"typeProperties": {
-					"domain": "https://adb-6486676399123065.1.databricks.azure.cn/",
+					"domain": "https://adb-536663473547105.1.databricks.azure.cn/",
 					"accessToken": {
 						"type": "SecureString",
 						"value": "[parameters('guyindatabricks_accessToken')]"
 					},
-					"newClusterNodeType": "Standard_DS3_v2",
+					"newClusterNodeType": "Standard_D4s_v5",
 					"newClusterNumOfWorker": "1",
 					"newClusterSparkEnvVars": {
 						"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
 					},
-					"newClusterVersion": "11.3.x-scala2.12",
+					"newClusterVersion": "12.2.x-scala2.12",
+					"newClusterDriverNodeType": "Standard_D4s_v5",
 					"clusterOption": "Fixed",
-					"newClusterInitScripts": [],
-					"policyId": "896340817E000001"
+					"newClusterInitScripts": []
 				}
 			},
 			"dependsOn": []
@@ -2565,6 +2613,16 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntime1')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/TransformMovies')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -2604,16 +2662,6 @@
 				"[concat(variables('factoryId'), '/datasets/MovieDB_Source')]",
 				"[concat(variables('factoryId'), '/datasets/MoviesSink')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/integrationRuntime1')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
-			},
-			"dependsOn": []
 		}
 	]
 }

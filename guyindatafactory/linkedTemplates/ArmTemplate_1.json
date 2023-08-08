@@ -129,6 +129,52 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/guyinsqltable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "guyinsql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DBName": {
+							"value": "@dataset().DBName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"SchemaName": {
+						"type": "String"
+					},
+					"TableName": {
+						"type": "String",
+						"defaultValue": "TableName"
+					},
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Ford/Ali Migration"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/guyinsql2019')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -1782,109 +1828,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/CDMP_SQL2019')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline6')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "SQLServerSourceDataSet",
-								"type": "DatasetReference",
-								"parameters": {
-									"SchemaName": "dbo",
-									"TableName": {
-										"value": "@pipeline().parameters.SourceTableName",
-										"type": "Expression"
-									},
-									"SourceDBName": {
-										"value": "@pipeline().parameters.SourceDBName",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "AzureSqlTargetDataSet",
-								"type": "DatasetReference",
-								"parameters": {
-									"SchemaName": "dbo",
-									"TableName": {
-										"value": "@pipeline().parameters.SinkTableName",
-										"type": "Expression"
-									},
-									"SinkDBName": {
-										"value": "@pipeline().parameters.SinkDBName",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"SourceDBName": {
-						"type": "string"
-					},
-					"SourceTableName": {
-						"type": "string"
-					},
-					"SinkDBName": {
-						"type": "string"
-					},
-					"SinkTableName": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "Demo/SimpleCopy"
-				},
-				"annotations": [],
-				"lastPublishTime": "2023-05-15T08:15:20Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SQLServerSourceDataSet')]"
 			]
 		}
 	]
