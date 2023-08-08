@@ -1,0 +1,35 @@
+{
+	"name": "guyinadlscsv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinadls",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"TableName": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "Ford/Ali Migration"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat(dataset().TableName,'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": "Ford/Ali Mirgration",
+				"fileSystem": "datafactory"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
