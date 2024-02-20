@@ -39,17 +39,6 @@
 						"type": "Expression"
 					}
 				},
-				"inputs": [
-					{
-						"referenceName": "CDMP_SQL2019",
-						"type": "DatasetReference",
-						"parameters": {
-							"SchemaName": "dbo",
-							"TableName": "Movies",
-							"DBName": "Rentals"
-						}
-					}
-				],
 				"outputs": [
 					{
 						"referenceName": "CDMP_DeltaLake",
