@@ -31,26 +31,8 @@
 							"fileExtension": ".txt"
 						}
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
+					"enableStaging": false
 				},
-				"inputs": [
-					{
-						"referenceName": "guyinsql2019_movies",
-						"type": "DatasetReference",
-						"parameters": {
-							"SchemaName": "dbo",
-							"TableName": "Movies"
-						}
-					}
-				],
 				"outputs": [
 					{
 						"referenceName": "MovieDB_Source",

@@ -88,26 +88,6 @@
 									"type": "Expression"
 								}
 							},
-							"inputs": [
-								{
-									"referenceName": "CDMP_SQL2019",
-									"type": "DatasetReference",
-									"parameters": {
-										"SchemaName": {
-											"value": "@item().SourceSchema",
-											"type": "Expression"
-										},
-										"TableName": {
-											"value": "@item().SourceTable",
-											"type": "Expression"
-										},
-										"DBName": {
-											"value": "@item().SourceDB",
-											"type": "Expression"
-										}
-									}
-								}
-							],
 							"outputs": [
 								{
 									"referenceName": "CDMP_DeltaLake",

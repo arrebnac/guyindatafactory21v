@@ -59,18 +59,6 @@
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "Incremental_Demo_Source_Table",
-						"type": "DatasetReference",
-						"parameters": {
-							"DBName": "Incremental_Demo",
-							"SchemaName": "dbo",
-							"TableName": {
-								"value": "@pipeline().parameters.TableName",
-								"type": "Expression"
-							}
-						}
 					}
 				}
 			},
@@ -114,30 +102,8 @@
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
+					"enableStaging": false
 				},
-				"inputs": [
-					{
-						"referenceName": "Incremental_Demo_Source_Table",
-						"type": "DatasetReference",
-						"parameters": {
-							"DBName": "Incremental_Demo",
-							"SchemaName": "dbo",
-							"TableName": {
-								"value": "@pipeline().parameters.TableName",
-								"type": "Expression"
-							}
-						}
-					}
-				],
 				"outputs": [
 					{
 						"referenceName": "Incremental_Demo_Sink_Table",
