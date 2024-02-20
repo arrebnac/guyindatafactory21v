@@ -21,21 +21,6 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"dataset": {
-						"referenceName": "MultipleTableCopy",
-						"type": "DatasetReference",
-						"parameters": {
-							"DBName": {
-								"value": "@pipeline().parameters.DBName",
-								"type": "Expression"
-							},
-							"SchemaName": {
-								"value": "@pipeline().parameters.SchemaName",
-								"type": "Expression"
-							},
-							"TableName": "test"
-						}
-					},
 					"firstRowOnly": false
 				}
 			},
@@ -80,36 +65,8 @@
 									"writeBehavior": "insert",
 									"sqlWriterUseTableLock": false
 								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
+								"enableStaging": false
 							},
-							"inputs": [
-								{
-									"referenceName": "MultipleTableCopy",
-									"type": "DatasetReference",
-									"parameters": {
-										"DBName": {
-											"value": "@pipeline().parameters.DBName",
-											"type": "Expression"
-										},
-										"SchemaName": {
-											"value": "@pipeline().parameters.SchemaName",
-											"type": "Expression"
-										},
-										"TableName": {
-											"value": "@item().name",
-											"type": "Expression"
-										}
-									}
-								}
-							],
 							"outputs": [
 								{
 									"referenceName": "Incremental_Demo_Sink_Table",
