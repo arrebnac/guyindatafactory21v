@@ -53,11 +53,6 @@
 				]
 			}
 		],
-		"parameters": {
-			"UnixTimeStamp": {
-				"type": "String"
-			}
-		},
 		"annotations": []
 	}
 }
