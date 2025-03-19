@@ -58,11 +58,6 @@
 				"type": "String"
 			}
 		},
-		"variables": {
-			"Test": {
-				"type": "String"
-			}
-		},
 		"annotations": []
 	}
 }
