@@ -53,6 +53,12 @@
 				]
 			}
 		],
+		"parameters": {
+			"Today": {
+				"type": "string",
+				"defaultValue": "20250319"
+			}
+		},
 		"annotations": []
 	}
 }
