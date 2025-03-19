@@ -22,7 +22,7 @@
 							"recursive": true,
 							"wildcardFolderPath": "Source",
 							"wildcardFileName": {
-								"value": "@utcNow()",
+								"value": "toTimestamp(pipeline().parameters.Today)",
 								"type": "Expression"
 							},
 							"deleteFilesAfterCompletion": false
