@@ -1,0 +1,18 @@
+{
+	"name": "databricks_chat_data_index",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "guyinaisearch",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Demo/AISearch"
+		},
+		"annotations": [],
+		"type": "AzureSearchIndex",
+		"schema": [],
+		"typeProperties": {
+			"indexName": "databricks-chat-index"
+		}
+	}
+}
